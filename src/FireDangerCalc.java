@@ -16,7 +16,7 @@ public class FireDangerCalc {
 	double FFM; //fine Fuel moisture rating
 	double BUI; //Buildup Index
 	double WIND; // wind speed MPH
-	double ADFM; //adjusted fuel mostiure rating based on 50 day lag
+	double ADFM; //adjusted fuel moisture rating based on 50 day lag
 	double grass; //Fine fuel spread 
 	double timber; //Timber spread index
 	double FLOAD; //Fire load index

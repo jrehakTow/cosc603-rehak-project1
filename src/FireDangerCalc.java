@@ -65,7 +65,7 @@ public class FireDangerCalc {
 	}
 	
 	public double calcTimberSpreadIndex(double WIND, double ADFM){
-		double A, B;
+		double A, B; //Special wind regression coefficients 
 		if(WIND < 14){
 			A = 0.01312;
 			B = 6;

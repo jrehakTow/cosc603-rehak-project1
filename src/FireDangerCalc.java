@@ -12,16 +12,16 @@ public class FireDangerCalc {
 	
 	boolean snow;
 	boolean rain;
-	double PRECIP;
-	double FFM;
-	double BUI;
-	double WIND;
-	double ADFM;
-	double grass;
-	double timber;
-	double FLOAD;
-	double a;
-	double b;
+	double PRECIP; //amount of precipitation in INCHES
+	double FFM; //fine Fuel moisture rating
+	double BUI; //Buildup Index
+	double WIND; // wind speed MPH
+	double ADFM; //adjusted fuel mostiure rating based on 50 day lag
+	double grass; //Fine fuel spread 
+	double timber; //Timber spread index
+	double FLOAD; //Fire load index
+	double a; //regression coefficient
+	double b; //regression coefficient 
 	
 	public static double FineFuelMoisture(double a, double b){
 		double FFM = 0;

@@ -1,3 +1,11 @@
+/*
+ * James Rehak							COSC603
+ * Re-engineering of Fire Danger Rating Calculator
+ * Original Source Code @:
+ * http://www.nrs.fs.fed.us/pubs/rn/rn_nc079.pdf
+ */
+
+
 package src;
 
 public class FireDangerCalc {

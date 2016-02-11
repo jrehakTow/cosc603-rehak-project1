@@ -36,7 +36,7 @@ public class FireDangerCalc {
 	}
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		// The logical flow will go here
 
 	}
 

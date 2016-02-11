@@ -4,6 +4,16 @@ public class FireDangerCalc {
 	
 	boolean snow;
 	boolean rain;
+	double PRECIP;
+	double FFM;
+	double BUI;
+	double WIND;
+	double ADFM;
+	double grass;
+	double timber;
+	double FLOAD;
+	double a;
+	double b;
 	
 	public static double FineFuelMoisture(double a, double b){
 		double FFM = 0;
@@ -25,7 +35,7 @@ public class FireDangerCalc {
 		return grass;
 	}
 	
-	public static double TimberSpreadIndex(double a, double b, double wind, double ADFM){
+	public static double TimberSpreadIndex(double a, double b, double WIND, double ADFM){
 		double timber = 0;
 		return timber;
 	}

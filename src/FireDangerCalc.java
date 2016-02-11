@@ -45,32 +45,41 @@ public class FireDangerCalc {
 	}
 	
 	public double calcFineFuelMoisture(double a, double b){
-		double FFM = 0;
+		FFM = a*Math.exp(b);
 		return FFM;
 	}
 	
 	public double calcAdjustedFuelMoist(double FFM, double BUI){
-		double ADFM = 0;
+		ADFM = 0.9*FFM + 9.5*Math.E*(-BUI/50);
 		return ADFM;
 	}
 	
 	public double calcBuildupIndex(double BUO, double PRECIP){
-		double BUI = 0;
+		BUI = -50*(Math.log(1-(-Math.E*(BUO/50))*Math.exp(1.175*(PRECIP - 0.1))));
 		return BUI;
 	}
 	
 	public double calcFineFuelSpread(double a, double b, double WIND){
-		double grass = 0;
+		grass = a*(WIND + b) * Math.pow(33 - FFM,1.65) - 3;
 		return grass;
 	}
 	
-	public double calcTimberSpreadIndex(double a, double b, double WIND, double ADFM){
-		double timber = 0;
+	public double calcTimberSpreadIndex(double WIND, double ADFM){
+		double A, B;
+		if(WIND < 14){
+			A = 0.01312;
+			B = 6;
+		}
+		else{
+			A = 0.009184;
+			B = 14.4;
+		}
+		timber = A*(WIND + B) * Math.pow(33 - ADFM,1.65) - 3;
 		return timber;
 	}
 	
 	public double calcFireLoadIndex(){
-		double FLOAD = 0;
+		FLOAD = Math.pow(10, 1.75*Math.log10(timber) + 0.32*Math.log10(BUI)-1.64);
 		return FLOAD;
 	}
 

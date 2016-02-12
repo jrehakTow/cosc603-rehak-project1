@@ -58,17 +58,25 @@ public class FireDangerCalc {
 	 *
 	 * @param tempRange the temp range
 	 */
-	public void calcAB(double tempRange){
+	public double calcDryWetRange(double dryTemp, double wetTemp){
+		return dryTemp - wetTemp;
+	}
+	
+	public void calcDryingFactor(){
+		
+	}
+	
+	public void calcAB(double DryWetRange){
 		//all temperatures are measured in fahrenheit
-		if(tempRange < 4.5){
+		if(DryWetRange < 4.5){
 			a = 30;
 			b = -0.1859;
 		}
-		else if(tempRange < 12.5){
+		else if(DryWetRange < 12.5){
 			a = 19;
 			b = -0.0859;
 		}
-		else if(tempRange < 27.5){
+		else if(DryWetRange < 27.5){
 			a = 13.8;
 			b = -0.0579;
 		}
@@ -83,7 +91,7 @@ public class FireDangerCalc {
 	 *
 	 * @param a the a
 	 * @param b the b
-	 * @return the double
+	 * @return the the fine fuel moisture calculation
 	 */
 	public double calcFineFuelMoisture(double a, double b){
 		FFM = a*Math.exp(b);
@@ -165,6 +173,8 @@ public class FireDangerCalc {
 	 */
 	public static void main(String[] args) {
 		// The logical flow will go here
+		
+		//in fortran77 the drying factor is initialized as 0. Referred to as DF
 
 	}
 

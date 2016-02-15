@@ -40,6 +40,14 @@ public class FireDangerCalc {
 	double dryTemp;
 	
 	double wetTemp;
+	
+	public boolean convertYesNo(char ch){
+		if(ch == 'y'|| ch == 'Y'){
+			return true;
+		}
+		else
+			return false;
+	}
 
 	public double calcDryWetRange(double dryTemp, double wetTemp){
 		return dryTemp - wetTemp;
@@ -110,7 +118,7 @@ public class FireDangerCalc {
 
 	public static void main(String[] args) {
 		// The logical flow will go here
-		FireDangerCalc n = new FireDangerCalc();
+		FireDangerCalc n = new FireDangerCalc(); //n is for new
 		//in fortran77 the drying factor is initialized as 0. Referred to as DF
 		Scanner in = new Scanner(System.in);
 		
@@ -121,8 +129,31 @@ public class FireDangerCalc {
 		System.out.println("Enter Wet bulb temperature: ");
 		n.wetTemp = in.nextDouble();
 		
-		//testing
-		System.out.println("dry: "+n.dryTemp+", wet: "+n.wetTemp);
+		System.out.println("Enter Wind Speed: ");
+		n.WIND = in.nextDouble();
+		
+		System.out.println("Enter Pecipitation: ");
+		n.PRECIP = in.nextDouble();
+		
+		System.out.println("Is there snow: ");
+		n.snow = n.convertYesNo(in.next().charAt(0));
+		
+		System.out.println(n.snow);
+		
+		System.out.println("Enter Yesterday's BUI: ");
+		n.BUO = in.nextDouble();
+		
+		
+		//Generate initial data
+		n.calcAB(n.calcDryWetRange(n.dryTemp, n.wetTemp)); //a & b are now initialized
+		System.out.println("Wet range: "+ n.calcDryWetRange(n.dryTemp, n.wetTemp)+", A: "+n.a+", B: "+n.b);
+		
+		n.calcFineFuelMoisture(n.a, n.b);
+		n.calcBuildupIndex(n.BUO, n.PRECIP);
+		n.calcFineFuelSpread(n.a, n.b, n.WIND);
+		n.calcAdjustedFuelMoist(n.FFM, n.BUI);
+		n.calcTimberSpreadIndex(n.WIND, n.ADFM);
+		n.calcFireLoadIndex();
 
 	}
 

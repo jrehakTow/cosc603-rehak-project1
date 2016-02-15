@@ -5,9 +5,8 @@
  * http://www.nrs.fs.fed.us/pubs/rn/rn_nc079.pdf
  */
 
-
 package src;
-
+import java.util.*;
 // TODO: Auto-generated Javadoc
 
 public class FireDangerCalc {
@@ -37,6 +36,10 @@ public class FireDangerCalc {
 	double a; //regression coefficient
 
 	double b; //regression coefficient 
+	
+	double dryTemp;
+	
+	double wetTemp;
 
 	public double calcDryWetRange(double dryTemp, double wetTemp){
 		return dryTemp - wetTemp;
@@ -107,8 +110,19 @@ public class FireDangerCalc {
 
 	public static void main(String[] args) {
 		// The logical flow will go here
-		
+		FireDangerCalc n = new FireDangerCalc();
 		//in fortran77 the drying factor is initialized as 0. Referred to as DF
+		Scanner in = new Scanner(System.in);
+		
+		//Get initial data
+		System.out.println("Enter Dry bulb temperature: ");
+		n.dryTemp = in.nextDouble();
+		
+		System.out.println("Enter Wet bulb temperature: ");
+		n.wetTemp = in.nextDouble();
+		
+		//testing
+		System.out.println("dry: "+n.dryTemp+", wet: "+n.wetTemp);
 
 	}
 

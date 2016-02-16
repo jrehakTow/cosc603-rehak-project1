@@ -115,6 +115,12 @@ public class FireDangerCalc {
 		FLOAD = Math.pow(10, 1.75*Math.log10(timber) + 0.32*Math.log10(BUI)-1.64);
 		return FLOAD;
 	}
+	
+	public void printAllResults(){
+		System.out.println("BUI: "+ BUI);
+		System.out.println("FFM: "+ FFM);
+		System.out.println("FLOAD: "+ FLOAD);
+	}
 
 	public static void main(String[] args) {
 		// The logical flow will go here
@@ -148,12 +154,54 @@ public class FireDangerCalc {
 		n.calcAB(n.calcDryWetRange(n.dryTemp, n.wetTemp)); //a & b are now initialized
 		System.out.println("Wet range: "+ n.calcDryWetRange(n.dryTemp, n.wetTemp)+", A: "+n.a+", B: "+n.b);
 		
+		//might be too early to do these
 		n.calcFineFuelMoisture(n.a, n.b);
 		n.calcBuildupIndex(n.BUO, n.PRECIP);
-		n.calcFineFuelSpread(n.a, n.b, n.WIND);
+		n.calcFineFuelSpread(n.a, n.b, n.WIND); //grass
 		n.calcAdjustedFuelMoist(n.FFM, n.BUI);
-		n.calcTimberSpreadIndex(n.WIND, n.ADFM);
+		n.calcTimberSpreadIndex(n.WIND, n.ADFM); //timber
 		n.calcFireLoadIndex();
+		
+		if(n.snow){
+			n.grass = 0;
+			n.timber = 0;
+			n.calcFireLoadIndex();
+			if(n.PRECIP > 0){
+				n.calcFineFuelMoisture(n.a, n.b); //Superfluous? 
+				
+				//drying factor
+				n.BUI = n.BUI + 1;// not sure of drying factor yet
+				
+				n.printAllResults();
+				System.exit(0);
+			}
+			n.printAllResults();
+			System.exit(0);
+		}
+		//no snow
+		n.calcFineFuelMoisture(n.a, n.b);
+		//calc drying factor
+		n.FFM = n.FFM + 2; //adjust for herb stage... find herb stage
+		if(n.PRECIP>0){
+			//adjust bui
+		}
+		//increase bui by drying factor
+		if(n.FFM > 33){
+			//all spread indexes to 1
+			n.grass = 1;
+			n.timber = 1;
+			n.calcFireLoadIndex();
+			n.printAllResults();
+			System.exit(0);
+		}
+		//calc if wind greater than 14mph-- already done in function
+		n.calcTimberSpreadIndex(n.WIND, n.ADFM);
+		if(n.timber == 0 && n.grass == 0){
+			n.printAllResults();
+			System.exit(0);
+		}
+		n.calcFireLoadIndex();
+		n.printAllResults();
 
 	}
 

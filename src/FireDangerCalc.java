@@ -88,7 +88,7 @@ public class FireDangerCalc {
 	}
 
 	public double calcBuildupIndex(double BUO, double PRECIP){
-		BUI = -50*(Math.log(1-(-Math.E*(BUO/50))*Math.exp(1.175*(PRECIP - 0.1))));
+		BUI = -50*(Math.log(1-(Math.E*(-BUO/50))*Math.exp(-1.175*(PRECIP - 0.1))));
 		return BUI;
 	}
 	
@@ -119,6 +119,9 @@ public class FireDangerCalc {
 	public void printAllResults(){
 		System.out.println("BUI: "+ BUI);
 		System.out.println("FFM: "+ FFM);
+		System.out.println("ADFM: "+ ADFM);
+		System.out.println("Timber: "+ timber);
+		System.out.println("grass: "+ grass);
 		System.out.println("FLOAD: "+ FLOAD);
 	}
 
@@ -161,11 +164,15 @@ public class FireDangerCalc {
 		n.calcAdjustedFuelMoist(n.FFM, n.BUI);
 		n.calcTimberSpreadIndex(n.WIND, n.ADFM); //timber
 		n.calcFireLoadIndex();
+		//pre-logic
+		System.out.println("initialize");
+		n.printAllResults();
 		
 		if(n.snow){
 			n.grass = 0;
 			n.timber = 0;
-			n.calcFireLoadIndex();
+			n.BUI = 0;
+			n.calcFireLoadIndex();//fload
 			if(n.PRECIP > 0){
 				n.calcFineFuelMoisture(n.a, n.b); //Superfluous? 
 				

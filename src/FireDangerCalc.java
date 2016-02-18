@@ -32,6 +32,8 @@ public class FireDangerCalc {
 	double timber; //Timber spread index
 
 	double FLOAD; //Fire load index
+	
+	double DF; //drying factor
 
 	double a; //regression coefficient
 
@@ -157,6 +159,12 @@ public class FireDangerCalc {
 		n.calcAB(n.calcDryWetRange(n.dryTemp, n.wetTemp)); //a & b are now initialized
 		System.out.println("Wet range: "+ n.calcDryWetRange(n.dryTemp, n.wetTemp)+", A: "+n.a+", B: "+n.b);
 		
+		n.FFM = 99;
+		n.ADFM = 99;
+		n.DF = 0;
+		n.FLOAD = 0;
+		
+		/*
 		//might be too early to do these
 		n.calcFineFuelMoisture(n.a, n.b);
 		n.calcBuildupIndex(n.BUO, n.PRECIP);
@@ -164,6 +172,8 @@ public class FireDangerCalc {
 		n.calcAdjustedFuelMoist(n.FFM, n.BUI);
 		n.calcTimberSpreadIndex(n.WIND, n.ADFM); //timber
 		n.calcFireLoadIndex();
+		*/
+		
 		//pre-logic
 		System.out.println("initialize");
 		n.printAllResults();
@@ -174,7 +184,7 @@ public class FireDangerCalc {
 			n.BUI = 0;
 			n.calcFireLoadIndex();//fload
 			if(n.PRECIP > 0){
-				n.calcFineFuelMoisture(n.a, n.b); //Superfluous? 
+				n.calcFineFuelMoisture(n.a, n.b); 
 				
 				//drying factor
 				n.BUI = n.BUI + 1;// not sure of drying factor yet

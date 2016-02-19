@@ -225,6 +225,7 @@ public class FireDangerCalc {
 		n.FFM = n.FFM + 2; //adjust for herb stage... find herb stage
 		if(n.PRECIP>0){
 			//adjust bui
+			n.calcBuildupIndex(n.BUO, n.PRECIP);
 		}
 		//increase bui by drying factor
 		if(n.FFM > 33){

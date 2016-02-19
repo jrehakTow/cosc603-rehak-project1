@@ -14,6 +14,8 @@ public class FireDangerCalc {
 	boolean snow;
 
 	boolean rain;
+	
+	double herb; //herb stage, has 3 states. 0%, 5%, 10%
 
 	double PRECIP; //amount of precipitation in INCHES
 
@@ -56,6 +58,18 @@ public class FireDangerCalc {
 	}
 	
 	public void calcDryingFactor(){
+		
+	}
+	
+	public void getHerbStage(char ch){
+		switch(ch){
+			case 'c': herb = 1; //don't use
+				break;
+			case 't': herb = 0.5;
+				break;
+			case 'g': herb = 0.1;
+				break;
+		}
 		
 	}
 	
@@ -134,24 +148,24 @@ public class FireDangerCalc {
 		Scanner in = new Scanner(System.in);
 		
 		//Get initial data
-		System.out.println("Enter Dry bulb temperature: ");
+		System.out.print("Enter Dry bulb temperature: ");
 		n.dryTemp = in.nextDouble();
 		
-		System.out.println("Enter Wet bulb temperature: ");
+		System.out.print("\nEnter Wet bulb temperature: ");
 		n.wetTemp = in.nextDouble();
 		
-		System.out.println("Enter Wind Speed: ");
+		System.out.print("\nEnter Wind Speed: ");
 		n.WIND = in.nextDouble();
 		
-		System.out.println("Enter Pecipitation: ");
+		System.out.print("\nEnter Pecipitation: ");
 		n.PRECIP = in.nextDouble();
 		
-		System.out.println("Is there snow: ");
+		System.out.print("\nIs there snow: ");
 		n.snow = n.convertYesNo(in.next().charAt(0));
 		
-		System.out.println(n.snow);
+		System.out.print("\nEnter Herb Stage: (Cured, Transistion, Green): ");
 		
-		System.out.println("Enter Yesterday's BUI: ");
+		System.out.print("\nEnter Yesterday's BUI: ");
 		n.BUO = in.nextDouble();
 		
 		

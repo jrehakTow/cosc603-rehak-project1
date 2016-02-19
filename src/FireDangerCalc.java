@@ -63,16 +63,25 @@ public class FireDangerCalc {
 	}
 	
 	public void calcDryingFactor(){
-		
+		double[] dryingFactors = {16, 10, 7, 5, 4, 3};
+		int i = 0;
+		while (FFM - dryingFactors[i] <= 0){
+			DF = i;
+			i++;
+			if(i == 6){
+				DF = 7;
+				break;
+			}//drying factor can be 0-7
+		}
 	}
 	
 	public void getHerbStage(char ch){
 		switch(ch){
-			case 'c': herb = 1; //don't use
+			case 'c': herb = 0; //don't use
 				break;
-			case 't': herb = 0.5;
+			case 't': herb = 5;
 				break;
-			case 'g': herb = 0.1;
+			case 'g': herb = 10;
 				break;
 		}
 		
@@ -219,15 +228,19 @@ public class FireDangerCalc {
 			n.printAllResults();
 			System.exit(0); //line 1-->4
 		}
+		
 		//no snow
 		n.calcFineFuelMoisture(n.a, n.b);
-		//calc drying factor
-		n.FFM = n.FFM + 2; //adjust for herb stage... find herb stage
+		n.calcDryingFactor();
+		
+		n.FFM = n.FFM + n.herb; //adjust for herb stage... find herb stage
 		if(n.PRECIP>0){
 			//adjust bui
 			n.calcBuildupIndex(n.BUO, n.PRECIP);
 		}
-		//increase bui by drying factor
+		
+		n.BUI = n.BUI + n.DF;//increase BUI by drying factor
+	
 		if(n.FFM > 33){
 			//all spread indexes to 1
 			n.grass = 1;

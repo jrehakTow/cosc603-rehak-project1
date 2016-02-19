@@ -15,6 +15,8 @@ public class FireDangerCalc {
 
 	boolean rain;
 	
+	char herbstage; //get input
+	
 	double herb; //herb stage, has 3 states. 0%, 5%, 10%
 
 	double PRECIP; //amount of precipitation in INCHES
@@ -45,6 +47,8 @@ public class FireDangerCalc {
 	
 	double wetTemp;
 	
+	double drywetRange;
+	
 	public boolean convertYesNo(char ch){
 		if(ch == 'y'|| ch == 'Y'){
 			return true;
@@ -54,7 +58,8 @@ public class FireDangerCalc {
 	}
 
 	public double calcDryWetRange(double dryTemp, double wetTemp){
-		return dryTemp - wetTemp;
+		drywetRange = dryTemp - wetTemp;
+		return drywetRange;
 	}
 	
 	public void calcDryingFactor(){
@@ -94,7 +99,7 @@ public class FireDangerCalc {
 	}
 
 	public double calcFineFuelMoisture(double a, double b){
-		FFM = a*Math.exp(b);
+		FFM = a*Math.exp(b) * drywetRange;
 		return FFM;
 	}
 	
@@ -151,21 +156,22 @@ public class FireDangerCalc {
 		System.out.print("Enter Dry bulb temperature: ");
 		n.dryTemp = in.nextDouble();
 		
-		System.out.print("\nEnter Wet bulb temperature: ");
+		System.out.print("Enter Wet bulb temperature: ");
 		n.wetTemp = in.nextDouble();
 		
-		System.out.print("\nEnter Wind Speed: ");
+		System.out.print("Enter Wind Speed: ");
 		n.WIND = in.nextDouble();
 		
-		System.out.print("\nEnter Pecipitation: ");
+		System.out.print("Enter Pecipitation: ");
 		n.PRECIP = in.nextDouble();
 		
-		System.out.print("\nIs there snow: ");
+		System.out.print("Is there snow: ");
 		n.snow = n.convertYesNo(in.next().charAt(0));
 		
-		System.out.print("\nEnter Herb Stage: (Cured, Transistion, Green): ");
+		System.out.print("Enter Herb Stage: (Cured, Transistion, Green): ");
+		n.getHerbStage(in.next().charAt(0));
 		
-		System.out.print("\nEnter Yesterday's BUI: ");
+		System.out.print("Enter Yesterday's BUI: ");
 		n.BUO = in.nextDouble();
 		
 		
@@ -191,23 +197,27 @@ public class FireDangerCalc {
 		//pre-logic
 		System.out.println("initialize");
 		n.printAllResults();
+		System.out.println("------This is just a test please ignore-------\n\n");
 		
 		if(n.snow){
 			n.grass = 0;
 			n.timber = 0;
 			n.BUI = 0;
-			n.calcFireLoadIndex();//fload
+			n.FLOAD = 0;//fload 
 			if(n.PRECIP > 0){
 				n.calcFineFuelMoisture(n.a, n.b); 
 				
-				//drying factor
-				n.BUI = n.BUI + 1;// not sure of drying factor yet
+				/*
+				 * not in actual code
+				 * //drying factor
+					n.BUI = n.BUI + 1;// not sure of drying factor yet
+				 */
 				
 				n.printAllResults();
-				System.exit(0);
+				System.exit(0); //line 2-->4
 			}
 			n.printAllResults();
-			System.exit(0);
+			System.exit(0); //line 1-->4
 		}
 		//no snow
 		n.calcFineFuelMoisture(n.a, n.b);

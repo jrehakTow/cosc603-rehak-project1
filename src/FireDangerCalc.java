@@ -108,7 +108,7 @@ public class FireDangerCalc {
 	}
 
 	public double calcFineFuelMoisture(double a, double b){
-		FFM = a*Math.exp(b) * drywetRange;
+		FFM = a*Math.exp(b* drywetRange);
 		return FFM;
 	}
 	
@@ -122,8 +122,17 @@ public class FireDangerCalc {
 		return BUI;
 	}
 	
-	public double calcFineFuelSpread(double a, double b, double WIND){
-		grass = a*(WIND + b) * Math.pow(33 - FFM,1.65) - 3;
+	public double calcFineFuelSpread(double WIND){
+		double A, B;
+		if(WIND < 14){
+			A = 0.01312;
+			B = 6;
+		}
+		else{
+			A = 0.009184;
+			B = 14.4;
+		}
+		grass = a*(WIND + b) * Math.pow(Math.abs(33 - FFM),1.65) - 3;
 		return grass;
 	}
 	
@@ -137,7 +146,7 @@ public class FireDangerCalc {
 			A = 0.009184;
 			B = 14.4;
 		}
-		timber = A*(WIND + B) * Math.pow(33 - ADFM,1.65) - 3;
+		timber = A*(WIND + B) * Math.pow((Math.abs(33-ADFM)),1.65) - 3;
 		return timber;
 	}
 
@@ -194,21 +203,6 @@ public class FireDangerCalc {
 		n.DF = 0;
 		n.FLOAD = 0;
 		
-		/*
-		//might be too early to do these
-		n.calcFineFuelMoisture(n.a, n.b);
-		n.calcBuildupIndex(n.BUO, n.PRECIP);
-		n.calcFineFuelSpread(n.a, n.b, n.WIND); //grass
-		n.calcAdjustedFuelMoist(n.FFM, n.BUI);
-		n.calcTimberSpreadIndex(n.WIND, n.ADFM); //timber
-		n.calcFireLoadIndex();
-		*/
-		
-		//pre-logic
-		System.out.println("initialize");
-		n.printAllResults();
-		System.out.println("------This is just a test please ignore-------\n\n");
-		
 		if(n.snow){
 			n.grass = 0;
 			n.timber = 0;
@@ -216,13 +210,6 @@ public class FireDangerCalc {
 			n.FLOAD = 0;
 			if(n.PRECIP > 0){
 				n.calcFineFuelMoisture(n.a, n.b); 
-				
-				/*
-				 * not in actual code
-				 * //drying factor
-					n.BUI = n.BUI + 1;// not sure of drying factor yet
-				 */
-				
 				n.printAllResults();
 				System.exit(0); //line 2-->4
 			}
@@ -240,12 +227,15 @@ public class FireDangerCalc {
 		
 		n.FFM = n.FFM + n.herb; //adjust for herb stage line 12
 		
-		if(n.PRECIP>0){
+		if(n.PRECIP>0.1){ 
 			//adjust bui
 			n.calcBuildupIndex(n.BUO, n.PRECIP);
 			if(n.BUI < 0){ //line 14
 				n.BUI = 0;
 			}
+		}
+		else{
+			n.BUI = n.BUO; //if no rain
 		}
 		
 		n.BUI = n.BUI + n.DF;//increase BUI by drying factor
@@ -264,6 +254,8 @@ public class FireDangerCalc {
 		}
 		//calc if wind greater than 14mph-- already done in function
 		n.calcTimberSpreadIndex(n.WIND, n.ADFM); //line
+		n.calcFineFuelSpread(n.WIND); //grass
+		
 		if(n.timber <= 0 && n.WIND < 14){ //line 22
 			n.timber = 1;
 		}

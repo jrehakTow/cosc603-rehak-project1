@@ -156,6 +156,7 @@ public class FireDangerCalc {
 	}
 
 	public static void main(String[] args) {
+		boolean skip = false;
 		// The logical flow will go here
 		FireDangerCalc n = new FireDangerCalc(); //n is for new
 		//in fortran77 the drying factor is initialized as 0. Referred to as DF
@@ -212,7 +213,7 @@ public class FireDangerCalc {
 			n.grass = 0;
 			n.timber = 0;
 			n.BUI = 0;
-			n.FLOAD = 0;//fload 
+			n.FLOAD = 0;
 			if(n.PRECIP > 0){
 				n.calcFineFuelMoisture(n.a, n.b); 
 				
@@ -230,18 +231,30 @@ public class FireDangerCalc {
 		}
 		
 		//no snow
-		n.calcFineFuelMoisture(n.a, n.b);
-		n.calcDryingFactor();
+		n.calcFineFuelMoisture(n.a, n.b); //line 7
+		n.calcDryingFactor(); //line 8
 		
-		n.FFM = n.FFM + n.herb; //adjust for herb stage... find herb stage
+		if(n.FFM - 1 <= 0){ //line 10
+			n.FFM = 1;
+		}
+		
+		n.FFM = n.FFM + n.herb; //adjust for herb stage line 12
+		
 		if(n.PRECIP>0){
 			//adjust bui
 			n.calcBuildupIndex(n.BUO, n.PRECIP);
+			if(n.BUI < 0){ //line 14
+				n.BUI = 0;
+			}
 		}
 		
 		n.BUI = n.BUI + n.DF;//increase BUI by drying factor
+		n.calcAdjustedFuelMoist(n.FFM, n.BUI); //line 15
 	
-		if(n.FFM > 33){
+		if(n.ADFM > 30){ //line 16
+			skip = true; 
+		}
+		if(n.FFM > 30 && !skip){ //33% in documentation
 			//all spread indexes to 1
 			n.grass = 1;
 			n.timber = 1;
@@ -250,14 +263,47 @@ public class FireDangerCalc {
 			System.exit(0);
 		}
 		//calc if wind greater than 14mph-- already done in function
-		n.calcTimberSpreadIndex(n.WIND, n.ADFM);
-		if(n.timber == 0 && n.grass == 0){
+		n.calcTimberSpreadIndex(n.WIND, n.ADFM); //line
+		if(n.timber <= 0 && n.WIND < 14){ //line 22
+			n.timber = 1;
+		}
+		if(n.grass <= 0 && n.WIND < 14){ //line 23
+			n.grass = 1;
+		}
+		if(n.timber > 99 && n.WIND > 14){ //line 27
+			n.timber = 99;
+		}
+		if(n.grass > 99 && n.WIND > 14){ //line 26
+			n.grass = 99;
+		}
+		if(n.timber <= 0){
+			n.printAllResults();
+			System.exit(0);
+		}
+		if(n.BUI <= 0){
+			n.BUI = 0;
+			n.FLOAD = 0;
+			n.printAllResults();
+			System.exit(0);
+		}
+		n.calcFireLoadIndex();
+		
+		if(n.FLOAD > 0){
+			n.FLOAD = Math.pow(10, n.FLOAD);
+		}
+		else{
+			n.FLOAD = 0;
+		}
+		n.printAllResults();
+		
+		/*
+		if(n.timber == 0 && n.grass == 0){ //only in documentation
 			n.printAllResults();
 			System.exit(0);
 		}
 		n.calcFireLoadIndex();
 		n.printAllResults();
-
+		*/
 	}
 
 }

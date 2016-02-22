@@ -133,7 +133,7 @@ public class FireDangerCalc {
 		else{
 			A = 0.009184;
 			B = 14.4;
-		}
+		} //double check this...
 		grass = A*(WIND + B) * Math.pow(Math.abs(33 - FFM),1.65) - 3;
 		return grass;
 	}

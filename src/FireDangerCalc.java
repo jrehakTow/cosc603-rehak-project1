@@ -9,6 +9,8 @@ package src;
 import java.util.*;
 // TODO: Auto-generated Javadoc
 
+//hello comment
+
 public class FireDangerCalc {
 	
 	boolean snow;

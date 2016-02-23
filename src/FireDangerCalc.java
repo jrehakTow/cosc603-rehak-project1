@@ -6,10 +6,8 @@
  */
 
 package src;
-import java.util.*;
+import java.util.Scanner;
 // TODO: Auto-generated Javadoc
-
-//hello comment
 
 public class FireDangerCalc {
 	
@@ -79,7 +77,7 @@ public class FireDangerCalc {
 	
 	public void getHerbStage(char ch){
 		switch(ch){
-			case 'c': herb = 0; //don't use
+			case 'c': herb = 0; 
 				break;
 			case 't': herb = 5;
 				break;
@@ -149,6 +147,7 @@ public class FireDangerCalc {
 			B = 14.4;
 		}
 		timber = A*(WIND + B) * Math.pow((Math.abs(33-ADFM)),1.65) - 3;
+		//absolute value for (33-ADFM) ok because not raised by even constant
 		return timber;
 	}
 
@@ -167,10 +166,10 @@ public class FireDangerCalc {
 	}
 
 	public static void main(String[] args) {
-		boolean skip = false;
-		// The logical flow will go here
+		boolean skip = false; //skip for FFM & ADFM 30% check
+		
 		FireDangerCalc n = new FireDangerCalc(); //n is for new
-		//in fortran77 the drying factor is initialized as 0. Referred to as DF
+		
 		Scanner in = new Scanner(System.in);
 		
 		//Get initial data
@@ -194,7 +193,6 @@ public class FireDangerCalc {
 		
 		System.out.print("Enter Yesterday's BUI: ");
 		n.BUO = in.nextDouble();
-		
 		
 		//Generate initial data
 		n.calcAB(n.calcDryWetRange(n.dryTemp, n.wetTemp)); //a & b are now initialized
@@ -229,15 +227,14 @@ public class FireDangerCalc {
 		
 		n.FFM = n.FFM + n.herb; //adjust for herb stage line 12
 		
-		if(n.PRECIP>0.1){ 
-			//adjust bui
+		if(n.PRECIP>0.1){  //adjust BUI for rain
 			n.calcBuildupIndex(n.BUO, n.PRECIP);
 			if(n.BUI < 0){ //line 14
 				n.BUI = 0;
 			}
 		}
 		else{
-			n.BUI = n.BUO; //if no rain
+			n.BUI = n.BUO; //if no rain 
 		}
 		
 		n.BUI = n.BUI + n.DF;//increase BUI by drying factor

@@ -17,37 +17,38 @@ public class FireDangerCalc {
 	
 	char herbstage; //get input
 	
-	double herb; //herb stage, has 3 states. 0%, 5%, 10%
+	double herb; // Herb stage, has 3 states. 0%, 5%, 10%
 
-	double PRECIP; //amount of precipitation in INCHES
+	double PRECIP; // Amount of precipitation in INCHES
 
-	double FFM; //fine Fuel moisture rating
+	double FFM; // Fine Fuel moisture rating
 
-	double BUI; //Buildup Index
+	double BUI; // Buildup Index
 
-	double BUO; //yesterday's BUI
+	double BUO; // Yesterday's BUI
 
-	double WIND; // wind speed MPH
+	double WIND; // Wind speed MPH
 
-	double ADFM; //adjusted fuel moisture rating based on 50 day lag
+	double ADFM; // Adjusted fuel moisture rating based on 50 day lag
 
-	double grass; //Fine fuel spread 
+	double grass; // Fine fuel spread 
 
-	double timber; //Timber spread index
+	double timber; // Timber spread index
 
-	double FLOAD; //Fire load index
+	double FLOAD; // Fire load index
 	
-	double DF; //drying factor
+	double DF; // Drying factor
 
-	double a; //regression coefficient
+	double a; // Regression coefficient
 
-	double b; //regression coefficient 
+	double b; // Regression coefficient 
 	
-	double dryTemp;
+	double dryTemp; // dry bulb temperature
 	
-	double wetTemp;
+	double wetTemp; // wet bulb temperature
 	
-	double drywetRange;
+	double drywetRange; // 
+	
 	
 	public boolean convertYesNo(char ch){
 		if(ch == 'y'|| ch == 'Y'){
@@ -56,11 +57,15 @@ public class FireDangerCalc {
 		else
 			return false;
 	}
+	
+	
 
 	public double calcDryWetRange(){
 		drywetRange = dryTemp - wetTemp;
 		return drywetRange;
 	}
+	
+	
 	
 	public void calcDryingFactor(){
 		double[] dryingFactors = {16.0, 10.0, 7.0, 5.0, 4.0, 3.0};
@@ -71,9 +76,11 @@ public class FireDangerCalc {
 			if(i == 6){
 				DF = 7.0;
 				break;
-			}//drying factor can be 0-7
+			}
 		}
 	}
+	
+	
 	
 	public void getHerbStage(char ch){
 		switch(ch){
@@ -84,11 +91,12 @@ public class FireDangerCalc {
 			case 'g': herb = 10;
 				break;
 		}
-		
 	}
 	
+	
+	
 	public void calcAB(){
-		//all temperatures are measured in fahrenheit
+		// All temperatures are measured in fahrenheit
 		if(drywetRange < 4.5){
 			a = 30.0;
 			b = -0.1859;
@@ -106,26 +114,33 @@ public class FireDangerCalc {
 			b = -0.0774;
 		}
 	}
+	
+	
 
 	public double calcFineFuelMoisture(){
-		FFM = a*Math.exp(b* drywetRange);
+		FFM = a * Math.exp(b * drywetRange);
 		return FFM;
 	}
 	
+	
+	
 	public double calcAdjustedFuelMoist(){
-		ADFM = 0.9*FFM + 9.5*Math.exp(-BUI/50);
+		ADFM = 0.9 * FFM + 9.5 * Math.exp(-BUI/50);
 		return ADFM;
 	}
+	
+	
 
 	public double calcBuildupIndex(){
-		BUI = -50.0*(Math.log(1-(Math.E*(-BUO/50))*Math.exp(-1.175*(PRECIP - 0.1))));
+		BUI = -50.0 * (Math.log(1-(Math.E * (-BUO/50) )*Math.exp(-1.175 * (PRECIP - 0.1) ) ) );
 		
-		//catch negative BUI
 		if(BUI < 0){ 
 			BUI = 0;
 		}
 		return BUI;
 	}
+	
+	
 	
 	public double calcFineFuelSpread(){
 		double A, B;
@@ -136,13 +151,16 @@ public class FireDangerCalc {
 		else{
 			A = 0.009184;
 			B = 14.4;
-		} //double check this...
-		grass = A*(WIND + B) * Math.pow(Math.abs(33 - FFM),1.65) - 3.0;
+		} 
+		
+		grass = A * (WIND + B) * Math.pow(Math.abs(33 - FFM), 1.65) - 3.0;
 		return grass;
 	}
 	
+	
+	
 	public double calcTimberSpreadIndex(){
-		double A, B; //Special wind regression coefficients 
+		double A, B; // Special wind regression coefficients 
 		if(WIND < 14){
 			A = 0.01312;
 			B = 6.0;
@@ -151,19 +169,24 @@ public class FireDangerCalc {
 			A = 0.009184;
 			B = 14.4;
 		}
-		timber = A*(WIND + B) * Math.pow((Math.abs(33-ADFM)),1.65) - 3.0;
-		//absolute value for (33-ADFM) ok because not raised by even constant
+		timber = A * (WIND + B) * Math.pow(Math.abs(33 - ADFM), 1.65) - 3.0;
+		//Absolute value for (33-ADFM) ok because not raised by even constant
+		
 		return timber;
 	}
+	
+	
 
 	public double calcFireLoadIndex(){
-		FLOAD = Math.pow(10, 1.75*Math.log10(timber) + 0.32*Math.log10(BUI)-1.64);
+		FLOAD = Math.pow(10, 1.75 * Math.log10(timber) + 0.32 * Math.log10(BUI) - 1.64);
 		
 		if(FLOAD < 0.0){
 			FLOAD = 0.0;
 		}
 		return FLOAD;
 	}
+	
+	
 	
 	public void printAllResults(){
 		System.out.println("\n-------Results--------");
@@ -175,6 +198,8 @@ public class FireDangerCalc {
 		System.out.println("FLOAD: "+ FLOAD);
 	}
 
+	
+	
 	public static void main(String[] args) {
 		boolean doSkip = true; // Skip for FFM & ADFM 30% check
 		
@@ -217,6 +242,7 @@ public class FireDangerCalc {
 			n.timber = 0.0;
 			n.BUI = 0.0;
 			n.FLOAD = 0.0;
+			
 			if(n.PRECIP > 0.1){
 				// Adjust BUI for rain
 				n.calcBuildupIndex();

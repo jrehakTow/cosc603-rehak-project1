@@ -113,12 +113,17 @@ public class FireDangerCalc {
 	}
 	
 	public double calcAdjustedFuelMoist(){
-		ADFM = 0.9*FFM + 9.5*Math.E*(-BUI/50);
+		ADFM = 0.9*FFM + 9.5*Math.exp(-BUI/50);
 		return ADFM;
 	}
 
 	public double calcBuildupIndex(){
 		BUI = -50*(Math.log(1-(Math.E*(-BUO/50))*Math.exp(-1.175*(PRECIP - 0.1))));
+		
+		//catch negative BUI
+		if(BUI < 0){ 
+			BUI = 0;
+		}
 		return BUI;
 	}
 	
@@ -153,6 +158,10 @@ public class FireDangerCalc {
 
 	public double calcFireLoadIndex(){
 		FLOAD = Math.pow(10, 1.75*Math.log10(timber) + 0.32*Math.log10(BUI)-1.64);
+		
+		if(FLOAD < 0){
+			FLOAD = 0;
+		}
 		return FLOAD;
 	}
 	
@@ -166,7 +175,7 @@ public class FireDangerCalc {
 	}
 
 	public static void main(String[] args) {
-		boolean skip = false; //skip for FFM & ADFM 30% check
+		boolean skip = true; //skip for FFM & ADFM 30% check
 		
 		FireDangerCalc n = new FireDangerCalc(); //n is for new
 		
@@ -197,19 +206,21 @@ public class FireDangerCalc {
 		//Generate initial data
 		n.calcDryWetRange();
 		n.calcAB(); //a & b are now initialized
-		
 		n.FFM = 99;
 		n.ADFM = 99;
 		n.DF = 0;
 		n.FLOAD = 0;
 		
 		if(n.snow){
+			//if snow on ground, all spread indexes must be 0 
 			n.grass = 0;
 			n.timber = 0;
 			n.BUI = 0;
 			n.FLOAD = 0;
-			if(n.PRECIP > 0){
-				n.calcFineFuelMoisture(); 
+			if(n.PRECIP > 0.1){
+				//adjust BUI for rain
+				n.calcBuildupIndex();
+
 				n.printAllResults();
 				System.exit(0); //line 2-->4
 			}
@@ -217,40 +228,46 @@ public class FireDangerCalc {
 			System.exit(0); //line 1-->4
 		}
 		
-		//no snow
-		n.calcFineFuelMoisture(); //line 7
-		n.calcDryingFactor(); //line 8
+		//if no snow
+		n.calcFineFuelMoisture(); //returns FFM line 7
+		
+		n.calcDryingFactor(); //returns DF line 8
 		
 		if(n.FFM - 1 <= 0){ //line 10
 			n.FFM = 1;
 		}
 		
-		n.FFM = n.FFM + n.herb; //adjust for herb stage line 12
+		//adjust for herb stage 
+		n.FFM = n.FFM + n.herb; //line 12
 		
-		if(n.PRECIP>0.1){  //adjust BUI for rain
+		if(n.PRECIP > 0.1){  
+			//adjust BUI for rain
 			n.calcBuildupIndex();
-			if(n.BUI < 0){ //line 14
-				n.BUI = 0;
-			}
 		}
-		else{
-			n.BUI = n.BUO; //if no rain 
+		//if no rain, yesterday's BUI used as initial BUI
+		else{ 
+			n.BUI = n.BUO; 
 		}
 		
-		n.BUI = n.BUI + n.DF;//increase BUI by drying factor
-		n.calcAdjustedFuelMoist(); //line 15
-	
+		//increase BUI by drying factor
+		n.BUI = n.BUI + n.DF;
+		
+		n.calcAdjustedFuelMoist(); //returns ADFM line 15
+		
+		//check if Fuel moistures are greater than 30%
 		if(n.ADFM > 30){ //line 16
-			skip = true; 
+			skip = false; 
 		}
 		if(n.FFM > 30 && !skip){ //33% in documentation
 			//all spread indexes to 1
 			n.grass = 1;
 			n.timber = 1;
 			n.calcFireLoadIndex();
+			
 			n.printAllResults();
 			System.exit(0);
 		}
+		
 		//calc if wind greater than 14mph-- already done in function
 		n.calcTimberSpreadIndex(); //line
 		n.calcFineFuelSpread(); //grass
@@ -272,29 +289,15 @@ public class FireDangerCalc {
 			System.exit(0);
 		}
 		if(n.BUI <= 0){ //line 29
-			n.BUI = 0;
 			n.FLOAD = 0;
+			
 			n.printAllResults(); 
 			System.exit(0); //line 30
 		}
 		n.calcFireLoadIndex();
-		
-		if(n.FLOAD > 0){
-			n.FLOAD = Math.pow(10, n.FLOAD); //line 33
-		}
-		else{
-			n.FLOAD = 0;
-		}
+
 		n.printAllResults();
-		
-		/*
-		if(n.timber == 0 && n.grass == 0){ //only in documentation
-			n.printAllResults();
-			System.exit(0);
-		}
-		n.calcFireLoadIndex();
-		n.printAllResults();
-		*/
+
 	}
 
 }

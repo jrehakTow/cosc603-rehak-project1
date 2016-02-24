@@ -63,13 +63,13 @@ public class FireDangerCalc {
 	}
 	
 	public void calcDryingFactor(){
-		double[] dryingFactors = {16, 10, 7, 5, 4, 3};
+		double[] dryingFactors = {16.0, 10.0, 7.0, 5.0, 4.0, 3.0};
 		int i = 0;
 		while (FFM - dryingFactors[i] <= 0){
 			DF = i;
 			i++;
 			if(i == 6){
-				DF = 7;
+				DF = 7.0;
 				break;
 			}//drying factor can be 0-7
 		}
@@ -90,11 +90,11 @@ public class FireDangerCalc {
 	public void calcAB(){
 		//all temperatures are measured in fahrenheit
 		if(drywetRange < 4.5){
-			a = 30;
+			a = 30.0;
 			b = -0.1859;
 		}
 		else if(drywetRange < 12.5){
-			a = 19;
+			a = 19.0;
 			b = -0.0859;
 		}
 		else if(drywetRange < 27.5){
@@ -118,7 +118,7 @@ public class FireDangerCalc {
 	}
 
 	public double calcBuildupIndex(){
-		BUI = -50*(Math.log(1-(Math.E*(-BUO/50))*Math.exp(-1.175*(PRECIP - 0.1))));
+		BUI = -50.0*(Math.log(1-(Math.E*(-BUO/50))*Math.exp(-1.175*(PRECIP - 0.1))));
 		
 		//catch negative BUI
 		if(BUI < 0){ 
@@ -137,7 +137,7 @@ public class FireDangerCalc {
 			A = 0.009184;
 			B = 14.4;
 		} //double check this...
-		grass = A*(WIND + B) * Math.pow(Math.abs(33 - FFM),1.65) - 3;
+		grass = A*(WIND + B) * Math.pow(Math.abs(33 - FFM),1.65) - 3.0;
 		return grass;
 	}
 	
@@ -145,13 +145,13 @@ public class FireDangerCalc {
 		double A, B; //Special wind regression coefficients 
 		if(WIND < 14){
 			A = 0.01312;
-			B = 6;
+			B = 6.0;
 		}
 		else{
 			A = 0.009184;
 			B = 14.4;
 		}
-		timber = A*(WIND + B) * Math.pow((Math.abs(33-ADFM)),1.65) - 3;
+		timber = A*(WIND + B) * Math.pow((Math.abs(33-ADFM)),1.65) - 3.0;
 		//absolute value for (33-ADFM) ok because not raised by even constant
 		return timber;
 	}
@@ -159,8 +159,8 @@ public class FireDangerCalc {
 	public double calcFireLoadIndex(){
 		FLOAD = Math.pow(10, 1.75*Math.log10(timber) + 0.32*Math.log10(BUI)-1.64);
 		
-		if(FLOAD < 0){
-			FLOAD = 0;
+		if(FLOAD < 0.0){
+			FLOAD = 0.0;
 		}
 		return FLOAD;
 	}
@@ -207,17 +207,17 @@ public class FireDangerCalc {
 		//Generate initial data
 		n.calcDryWetRange();
 		n.calcAB(); //a & b are now initialized
-		n.FFM = 99;
-		n.ADFM = 99;
-		n.DF = 0;
-		n.FLOAD = 0;
+		n.FFM = 99.0;
+		n.ADFM = 99.0;
+		n.DF = 0.0;
+		n.FLOAD = 0.0;
 		
 		if(n.snow){
 			//if snow on ground, all spread indexes must be 0 
-			n.grass = 0;
-			n.timber = 0;
-			n.BUI = 0;
-			n.FLOAD = 0;
+			n.grass = 0.0;
+			n.timber = 0.0;
+			n.BUI = 0.0;
+			n.FLOAD = 0.0;
 			if(n.PRECIP > 0.1){
 				//adjust BUI for rain
 				n.calcBuildupIndex();
@@ -234,7 +234,7 @@ public class FireDangerCalc {
 		
 		n.calcDryingFactor(); //returns DF line 8
 		
-		if(n.FFM - 1 <= 0){ //line 10
+		if(n.FFM - 1 <= 0.0){ //line 10
 			n.FFM = 1;
 		}
 		
@@ -256,7 +256,7 @@ public class FireDangerCalc {
 		n.calcAdjustedFuelMoist(); //returns ADFM line 15
 		
 		//check if Fuel moistures are greater than 30%
-		if(n.ADFM > 30){ //line 16
+		if(n.ADFM > 30.0){ //line 16
 			doSkip = false; 
 		}
 		if(n.FFM > 30 && !doSkip){ //33% in documentation
@@ -269,32 +269,34 @@ public class FireDangerCalc {
 			System.exit(0);
 		}
 		
-		//calc if wind greater than 14mph-- already done in function
-		n.calcTimberSpreadIndex(); //line
+		//calculate timber and grass spreads
+		n.calcTimberSpreadIndex(); //timber
 		n.calcFineFuelSpread(); //grass
 		
-		if(n.timber <= 0 && n.WIND <= 14){ //line 22
-			n.timber = 1;
+		if(n.timber <= 0.0 && n.WIND <= 14){ //line 22
+			n.timber = 1.0;
 		}
 		if(n.grass <= 0 && n.WIND <= 14){ //line 23
-			n.grass = 1;
+			n.grass = 1.0;
 		}
-		if(n.timber > 99 && n.WIND > 14){ //line 27
-			n.timber = 99;
+		if(n.timber > 99.0 && n.WIND > 14){ //line 27
+			n.timber = 99.0;
 		}
-		if(n.grass > 99 && n.WIND > 14){ //line 26
-			n.grass = 99;
+		if(n.grass > 99.0 && n.WIND > 14){ //line 26
+			n.grass = 99.0;
 		}
-		if(n.timber <= 0){
+		if(n.timber <= 0.0){
 			n.printAllResults();
 			System.exit(0);
 		}
-		if(n.BUI <= 0){ //line 29
+		
+		if(n.BUI <= 0.0){ //line 29
 			n.FLOAD = 0;
 			
 			n.printAllResults(); 
 			System.exit(0); //line 30
 		}
+		
 		n.calcFireLoadIndex();
 
 		n.printAllResults();

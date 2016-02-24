@@ -27,7 +27,7 @@ public class FireDangerCalc {
 
 	double BUO; // Yesterday's BUI
 
-	double WIND; // Wind speed MPH
+	double wind; // Wind speed MPH
 
 	double ADFM; // Adjusted fuel moisture rating based on 50 day lag
 
@@ -60,14 +60,14 @@ public class FireDangerCalc {
 	
 	
 
-	public double calcDryWetRange(){
+	public double computeDryWetRange(){
 		drywetRange = dryTemp - wetTemp;
 		return drywetRange;
 	}
 	
 	
 	
-	public void calcDryingFactor(){
+	public void computeDryingFactor(){
 		double[] dryingFactors = {16.0, 10.0, 7.0, 5.0, 4.0, 3.0};
 		int i = 0;
 		while (FFM - dryingFactors[i] <= 0){
@@ -95,7 +95,7 @@ public class FireDangerCalc {
 	
 	
 	
-	public void calcAB(){
+	public void computeAB(){
 		// All temperatures are measured in fahrenheit
 		if(drywetRange < 4.5){
 			a = 30.0;
@@ -117,21 +117,21 @@ public class FireDangerCalc {
 	
 	
 
-	public double calcFineFuelMoisture(){
+	public double computeFineFuelMoisture(){
 		FFM = a * Math.exp(b * drywetRange);
 		return FFM;
 	}
 	
 	
 	
-	public double calcAdjustedFuelMoist(){
+	public double computeAdjustedFuelMoist(){
 		ADFM = 0.9 * FFM + 9.5 * Math.exp(-BUI/50);
 		return ADFM;
 	}
 	
 	
 
-	public double calcBuildupIndex(){
+	public double computeBuildupIndex(){
 		BUI = -50.0 * (Math.log(1-(Math.E * (-BUO/50) )*Math.exp(-1.175 * (PRECIP - 0.1) ) ) );
 		
 		if(BUI < 0){ 
@@ -142,9 +142,9 @@ public class FireDangerCalc {
 	
 	
 	
-	public double calcFineFuelSpread(){
+	public double computeFineFuelSpread(){
 		double A, B;
-		if(WIND < 14){
+		if(wind < 14){
 			A = 0.01312;
 			B = 6;
 		}
@@ -153,15 +153,15 @@ public class FireDangerCalc {
 			B = 14.4;
 		} 
 		
-		grass = A * (WIND + B) * Math.pow(Math.abs(33 - FFM), 1.65) - 3.0;
+		grass = A * (wind + B) * Math.pow(Math.abs(33 - FFM), 1.65) - 3.0;
 		return grass;
 	}
 	
 	
 	
-	public double calcTimberSpreadIndex(){
+	public double computeTimberSpreadIndex(){
 		double A, B; // Special wind regression coefficients 
-		if(WIND < 14){
+		if(wind < 14){
 			A = 0.01312;
 			B = 6.0;
 		}
@@ -169,7 +169,7 @@ public class FireDangerCalc {
 			A = 0.009184;
 			B = 14.4;
 		}
-		timber = A * (WIND + B) * Math.pow(Math.abs(33 - ADFM), 1.65) - 3.0;
+		timber = A * (wind + B) * Math.pow(Math.abs(33 - ADFM), 1.65) - 3.0;
 		//Absolute value for (33-ADFM) ok because not raised by even constant
 		
 		return timber;
@@ -177,7 +177,7 @@ public class FireDangerCalc {
 	
 	
 
-	public double calcFireLoadIndex(){
+	public double computeFireLoadIndex(){
 		FLOAD = Math.pow(10, 1.75 * Math.log10(timber) + 0.32 * Math.log10(BUI) - 1.64);
 		
 		if(FLOAD < 0.0){
@@ -203,127 +203,127 @@ public class FireDangerCalc {
 	public static void main(String[] args) {
 		boolean doSkip = true; // Skip for FFM & ADFM 30% check
 		
-		FireDangerCalc n = new FireDangerCalc(); //n is for new
+		FireDangerCalc dngr = new FireDangerCalc(); //n is for new
 		
 		Scanner in = new Scanner(System.in);
 		
 		// Get initial data
 		System.out.print("Enter Dry bulb temperature: ");
-		n.dryTemp = in.nextDouble();
+		dngr.dryTemp = in.nextDouble();
 		
 		System.out.print("Enter Wet bulb temperature: ");
-		n.wetTemp = in.nextDouble();
+		dngr.wetTemp = in.nextDouble();
 		
 		System.out.print("Enter Wind Speed: ");
-		n.WIND = in.nextDouble();
+		dngr.wind = in.nextDouble();
 		
 		System.out.print("Enter Pecipitation: ");
-		n.PRECIP = in.nextDouble();
+		dngr.PRECIP = in.nextDouble();
 		
 		System.out.print("Is there snow: ");
-		n.snow = n.convertYesNo(in.next().charAt(0));
+		dngr.snow = dngr.convertYesNo(in.next().charAt(0));
 		
 		System.out.print("Enter Herb Stage: (Cured, Transistion, Green): ");
-		n.getHerbStage(in.next().charAt(0));
+		dngr.getHerbStage(in.next().charAt(0));
 		
 		System.out.print("Enter Yesterday's BUI: ");
-		n.BUO = in.nextDouble();
+		dngr.BUO = in.nextDouble();
 		
 		//Generate initial data
-		n.calcDryWetRange();
-		n.calcAB(); //a & b are now initialized
-		n.FFM = 99.0;
-		n.ADFM = 99.0;
-		n.DF = 0.0;
-		n.FLOAD = 0.0;
+		dngr.computeDryWetRange();
+		dngr.computeAB(); //a & b are now initialized
+		dngr.FFM = 99.0;
+		dngr.ADFM = 99.0;
+		dngr.DF = 0.0;
+		dngr.FLOAD = 0.0;
 		
-		if(n.snow){
-			n.grass = 0.0;
-			n.timber = 0.0;
-			n.BUI = 0.0;
-			n.FLOAD = 0.0;
+		if(dngr.snow){
+			dngr.grass = 0.0;
+			dngr.timber = 0.0;
+			dngr.BUI = 0.0;
+			dngr.FLOAD = 0.0;
 			
-			if(n.PRECIP > 0.1){
+			if(dngr.PRECIP > 0.1){
 				// Adjust BUI for rain
-				n.calcBuildupIndex();
+				dngr.computeBuildupIndex();
 
-				n.printAllResults();
+				dngr.printAllResults();
 				System.exit(0); 
 			}
-			n.printAllResults();
+			dngr.printAllResults();
 			System.exit(0); 
 		}
 		
 		// If no snow
-		n.calcFineFuelMoisture(); 
+		dngr.computeFineFuelMoisture(); 
 		
-		n.calcDryingFactor(); 
+		dngr.computeDryingFactor(); 
 		
-		if(n.FFM - 1 <= 0.0){ 
-			n.FFM = 1;
+		if(dngr.FFM - 1 <= 0.0){ 
+			dngr.FFM = 1;
 		}
 		
 		// Adjust for herb stage 
-		n.FFM = n.FFM + n.herb; 
+		dngr.FFM = dngr.FFM + dngr.herb; 
 		
-		if(n.PRECIP > 0.1){  
+		if(dngr.PRECIP > 0.1){  
 			// Adjust BUI for rain
-			n.calcBuildupIndex();
+			dngr.computeBuildupIndex();
 		}
 		else{ // If no rain, yesterday's BUI used as initial BUI
-			n.BUI = n.BUO; 
+			dngr.BUI = dngr.BUO; 
 		}
 		
 		// Increase BUI by drying factor
-		n.BUI = n.BUI + n.DF;
+		dngr.BUI = dngr.BUI + dngr.DF;
 		
-		n.calcAdjustedFuelMoist(); 
+		dngr.computeAdjustedFuelMoist(); 
 		
 		// Check if Fuel moistures are greater than 30%
-		if(n.ADFM > 30.0){ //line 16
+		if(dngr.ADFM > 30.0){ //line 16
 			doSkip = false; 
 		}
-		if(n.FFM > 30 && !doSkip){ 
+		if(dngr.FFM > 30 && !doSkip){ 
 			// All spread indexes to 1
-			n.grass = 1;
-			n.timber = 1;
-			n.calcFireLoadIndex();
+			dngr.grass = 1;
+			dngr.timber = 1;
+			dngr.computeFireLoadIndex();
 			
-			n.printAllResults();
+			dngr.printAllResults();
 			System.exit(0);
 		}
 		
 		// Calculate timber and grass spreads
-		n.calcTimberSpreadIndex(); //timber
-		n.calcFineFuelSpread(); //grass
+		dngr.computeTimberSpreadIndex(); //timber
+		dngr.computeFineFuelSpread(); //grass
 		
-		if(n.timber <= 0.0 && n.WIND <= 14){ 
-			n.timber = 1.0;
+		if(dngr.timber <= 0.0 && dngr.wind <= 14){ 
+			dngr.timber = 1.0;
 		}
-		if(n.grass <= 0 && n.WIND <= 14){ 
-			n.grass = 1.0;
+		if(dngr.grass <= 0 && dngr.wind <= 14){ 
+			dngr.grass = 1.0;
 		}
-		if(n.timber > 99.0 && n.WIND > 14){ 
-			n.timber = 99.0;
+		if(dngr.timber > 99.0 && dngr.wind > 14){ 
+			dngr.timber = 99.0;
 		}
-		if(n.grass > 99.0 && n.WIND > 14){ 
-			n.grass = 99.0;
+		if(dngr.grass > 99.0 && dngr.wind > 14){ 
+			dngr.grass = 99.0;
 		}
-		if(n.timber <= 0.0){
-			n.printAllResults();
+		if(dngr.timber <= 0.0){
+			dngr.printAllResults();
 			System.exit(0);
 		}
 		
-		if(n.BUI <= 0.0){ 
-			n.FLOAD = 0;
+		if(dngr.BUI <= 0.0){ 
+			dngr.FLOAD = 0;
 			
-			n.printAllResults(); 
+			dngr.printAllResults(); 
 			System.exit(0); 
 		}
 		
-		n.calcFireLoadIndex();
+		dngr.computeFireLoadIndex();
 
-		n.printAllResults();
+		dngr.printAllResults();
 
 	}
 

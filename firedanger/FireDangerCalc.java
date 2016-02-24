@@ -5,7 +5,7 @@
  * http://www.nrs.fs.fed.us/pubs/rn/rn_nc079.pdf
  */
 
-package src;
+package firedanger;
 import java.util.Scanner;
 // TODO: Auto-generated Javadoc
 
@@ -166,6 +166,7 @@ public class FireDangerCalc {
 	}
 	
 	public void printAllResults(){
+		System.out.println("\n-------Results--------");
 		System.out.println("BUI: "+ BUI);
 		System.out.println("FFM: "+ FFM);
 		System.out.println("ADFM: "+ ADFM);

@@ -176,7 +176,7 @@ public class FireDangerCalc {
 	}
 
 	public static void main(String[] args) {
-		boolean skip = true; //skip for FFM & ADFM 30% check
+		boolean doSkip = true; //skip for FFM & ADFM 30% check
 		
 		FireDangerCalc n = new FireDangerCalc(); //n is for new
 		
@@ -257,9 +257,9 @@ public class FireDangerCalc {
 		
 		//check if Fuel moistures are greater than 30%
 		if(n.ADFM > 30){ //line 16
-			skip = false; 
+			doSkip = false; 
 		}
-		if(n.FFM > 30 && !skip){ //33% in documentation
+		if(n.FFM > 30 && !doSkip){ //33% in documentation
 			//all spread indexes to 1
 			n.grass = 1;
 			n.timber = 1;

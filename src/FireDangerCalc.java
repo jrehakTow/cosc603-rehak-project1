@@ -196,7 +196,6 @@ public class FireDangerCalc {
 		
 		//Generate initial data
 		n.calcAB(n.calcDryWetRange(n.dryTemp, n.wetTemp)); //a & b are now initialized
-		System.out.println("Wet range: "+ n.calcDryWetRange(n.dryTemp, n.wetTemp)+", A: "+n.a+", B: "+n.b);
 		
 		n.FFM = 99;
 		n.ADFM = 99;

@@ -176,13 +176,13 @@ public class FireDangerCalc {
 	}
 
 	public static void main(String[] args) {
-		boolean doSkip = true; //skip for FFM & ADFM 30% check
+		boolean doSkip = true; // Skip for FFM & ADFM 30% check
 		
 		FireDangerCalc n = new FireDangerCalc(); //n is for new
 		
 		Scanner in = new Scanner(System.in);
 		
-		//Get initial data
+		// Get initial data
 		System.out.print("Enter Dry bulb temperature: ");
 		n.dryTemp = in.nextDouble();
 		
@@ -213,54 +213,52 @@ public class FireDangerCalc {
 		n.FLOAD = 0.0;
 		
 		if(n.snow){
-			//if snow on ground, all spread indexes must be 0 
 			n.grass = 0.0;
 			n.timber = 0.0;
 			n.BUI = 0.0;
 			n.FLOAD = 0.0;
 			if(n.PRECIP > 0.1){
-				//adjust BUI for rain
+				// Adjust BUI for rain
 				n.calcBuildupIndex();
 
 				n.printAllResults();
-				System.exit(0); //line 2-->4
+				System.exit(0); 
 			}
 			n.printAllResults();
-			System.exit(0); //line 1-->4
+			System.exit(0); 
 		}
 		
-		//if no snow
-		n.calcFineFuelMoisture(); //returns FFM line 7
+		// If no snow
+		n.calcFineFuelMoisture(); 
 		
-		n.calcDryingFactor(); //returns DF line 8
+		n.calcDryingFactor(); 
 		
-		if(n.FFM - 1 <= 0.0){ //line 10
+		if(n.FFM - 1 <= 0.0){ 
 			n.FFM = 1;
 		}
 		
-		//adjust for herb stage 
-		n.FFM = n.FFM + n.herb; //line 12
+		// Adjust for herb stage 
+		n.FFM = n.FFM + n.herb; 
 		
 		if(n.PRECIP > 0.1){  
-			//adjust BUI for rain
+			// Adjust BUI for rain
 			n.calcBuildupIndex();
 		}
-		//if no rain, yesterday's BUI used as initial BUI
-		else{ 
+		else{ // If no rain, yesterday's BUI used as initial BUI
 			n.BUI = n.BUO; 
 		}
 		
-		//increase BUI by drying factor
+		// Increase BUI by drying factor
 		n.BUI = n.BUI + n.DF;
 		
-		n.calcAdjustedFuelMoist(); //returns ADFM line 15
+		n.calcAdjustedFuelMoist(); 
 		
-		//check if Fuel moistures are greater than 30%
+		// Check if Fuel moistures are greater than 30%
 		if(n.ADFM > 30.0){ //line 16
 			doSkip = false; 
 		}
-		if(n.FFM > 30 && !doSkip){ //33% in documentation
-			//all spread indexes to 1
+		if(n.FFM > 30 && !doSkip){ 
+			// All spread indexes to 1
 			n.grass = 1;
 			n.timber = 1;
 			n.calcFireLoadIndex();
@@ -269,20 +267,20 @@ public class FireDangerCalc {
 			System.exit(0);
 		}
 		
-		//calculate timber and grass spreads
+		// Calculate timber and grass spreads
 		n.calcTimberSpreadIndex(); //timber
 		n.calcFineFuelSpread(); //grass
 		
-		if(n.timber <= 0.0 && n.WIND <= 14){ //line 22
+		if(n.timber <= 0.0 && n.WIND <= 14){ 
 			n.timber = 1.0;
 		}
-		if(n.grass <= 0 && n.WIND <= 14){ //line 23
+		if(n.grass <= 0 && n.WIND <= 14){ 
 			n.grass = 1.0;
 		}
-		if(n.timber > 99.0 && n.WIND > 14){ //line 27
+		if(n.timber > 99.0 && n.WIND > 14){ 
 			n.timber = 99.0;
 		}
-		if(n.grass > 99.0 && n.WIND > 14){ //line 26
+		if(n.grass > 99.0 && n.WIND > 14){ 
 			n.grass = 99.0;
 		}
 		if(n.timber <= 0.0){
@@ -290,11 +288,11 @@ public class FireDangerCalc {
 			System.exit(0);
 		}
 		
-		if(n.BUI <= 0.0){ //line 29
+		if(n.BUI <= 0.0){ 
 			n.FLOAD = 0;
 			
 			n.printAllResults(); 
-			System.exit(0); //line 30
+			System.exit(0); 
 		}
 		
 		n.calcFireLoadIndex();

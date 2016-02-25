@@ -1,55 +1,84 @@
-/*
- * James Rehak							COSC603
- * Re-engineering of Fire Danger Rating Calculator
- * Original Source Code @:
- * http://www.nrs.fs.fed.us/pubs/rn/rn_nc079.pdf
- */
 
 package firedanger;
-import java.util.Scanner;
-// TODO: Auto-generated Javadoc
 
+import java.util.Scanner;
+
+/**
+ * <h1>Fire Danger Calculator</h1>
+ * FireDangerCalc is a Re-engineering of Fire Danger Rating Calculator.
+ * The program is contained in one class: FireDangerCalc
+ * <p>
+ * Original source code can be found: 
+ * @see <a href="http://www.nrs.fs.fed.us/pubs/rn/rn_nc079.pdf"</a>
+ * @author James Rehak
+ */
 public class FireDangerCalc {
 	
+	/** The snow. */
 	boolean snow;
 
+	/** The rain. */
 	boolean rain;
 	
+	/** The herbstage. */
 	char herbstage; //get input
 	
+	/** The herbstage percentage. */
 	double herb; // Herb stage, has 3 states. 0%, 5%, 10%
 
+	/** The precipitation. */
 	double PRECIP; // Amount of precipitation in INCHES
 
-	double FFM; // Fine Fuel moisture rating
+	/** The Fine Fuel Moisture Rating. */
+	double FFM; 
 
-	double BUI; // Buildup Index
+	/** The Buildup Index. */
+	double BUI; 
 
-	double BUO; // Yesterday's BUI
+	/** Yesterday's Buildup Index. */
+	double BUO; 
 
-	double wind; // Wind speed MPH
+	/** The wind. */
+	double wind; // Wind speed measured in MPH
 
+	/** The Adjusted Fuel Moisture Rating. */
 	double ADFM; // Adjusted fuel moisture rating based on 50 day lag
 
-	double grass; // Fine fuel spread 
+	/** The Fine Fuel Spread. Shown as Grass */
+	double grass; 
 
-	double timber; // Timber spread index
+	/** The Timber Spread index. */
+	double timber; 
 
-	double FLOAD; // Fire load index
+	/** The Fire Load Index. */
+	double FLOAD; 
 	
-	double DF; // Drying factor
+	/** The Drying factor. */
+	double DF; 
 
-	double a; // Regression coefficient
+	/** The a regression coefficient. */
+	double a; 
 
-	double b; // Regression coefficient 
+	/** The b regression coefficient. */
+	double b; 
 	
-	double dryTemp; // dry bulb temperature
+	/** The dry bulb temperature. */
+	double dryTemp; 
 	
-	double wetTemp; // wet bulb temperature
+	/** The wet bulb temperature. */
+	double wetTemp; 
 	
+	/** The dry wet temperature range. */
 	double drywetRange; // 
 	
 	
+	/**
+	 * This method converts the yes or no
+	 * input character into a boolean 
+	 *
+	 * @param ch the character
+	 * @return true, if yes
+	 */
 	public boolean convertYesNo(char ch){
 		if(ch == 'y'|| ch == 'Y'){
 			return true;
@@ -60,6 +89,11 @@ public class FireDangerCalc {
 	
 	
 
+	/**
+	 * Compute the dry wet range.
+	 *
+	 * @return the dry wet range.
+	 */
 	public double computeDryWetRange(){
 		drywetRange = dryTemp - wetTemp;
 		return drywetRange;
@@ -67,6 +101,11 @@ public class FireDangerCalc {
 	
 	
 	
+	/**
+	 * Compute drying factor.
+	 * <p>
+	 * The drying factor is added to the BUI.
+	 */
 	public void computeDryingFactor(){
 		double[] dryingFactors = {16.0, 10.0, 7.0, 5.0, 4.0, 3.0};
 		int i = 0;
@@ -82,6 +121,15 @@ public class FireDangerCalc {
 	
 	
 	
+	/**
+	 * Gets the herb stage.
+	 * <p> 
+	 * Herb stage is used to adjust the calculated fine fuel 
+	 * moisture by adding 5% for transition stage or 10% for green fuels
+	 *
+	 * @param ch the character used to determine the herb stage.
+	 * @return the herb stage percentage.
+	 */
 	public void getHerbStage(char ch){
 		switch(ch){
 			case 'c': herb = 0; 
@@ -95,6 +143,9 @@ public class FireDangerCalc {
 	
 	
 	
+	/**
+	 * Compute a b regression coefficients.
+	 */
 	public void computeAB(){
 		// All temperatures are measured in fahrenheit
 		if(drywetRange < 4.5){
@@ -117,6 +168,11 @@ public class FireDangerCalc {
 	
 	
 
+	/**
+	 * Compute fine fuel moisture.
+	 *
+	 * @return the fine fuel moisture.
+	 */
 	public double computeFineFuelMoisture(){
 		FFM = a * Math.exp(b * drywetRange);
 		return FFM;
@@ -124,6 +180,14 @@ public class FireDangerCalc {
 	
 	
 	
+	/**
+	 * Compute adjusted fuel moisture.
+	 * <p>
+	 * Adjusted fine fuel moisture is also equal to equivalent fuel 
+	 * moisture
+	 *
+	 * @return the Adjusted Fine Fuel Moisture
+	 */
 	public double computeAdjustedFuelMoist(){
 		ADFM = 0.9 * FFM + 9.5 * Math.exp(-BUI/50);
 		return ADFM;
@@ -131,6 +195,13 @@ public class FireDangerCalc {
 	
 	
 
+	/**
+	 * Compute buildup index.
+	 * <p> 
+	 * Compute buildup index is used when ever there is precipitation. 
+	 *
+	 * @return the Build Up Index
+	 */
 	public double computeBuildupIndex(){
 		BUI = -50.0 * (Math.log(1-(Math.E * (-BUO/50) )*Math.exp(-1.175 * (PRECIP - 0.1) ) ) );
 		
@@ -142,6 +213,14 @@ public class FireDangerCalc {
 	
 	
 	
+	/**
+	 * Compute fine fuel spread.
+	 * <p>
+	 * A and B coefficients are adjusted based on wind speed.
+	 * The wind and fine fuel moisture are used as parameters.
+	 *
+	 * @return the Fine Fuel Spread referred to as grass
+	 */
 	public double computeFineFuelSpread(){
 		double A, B;
 		if(wind < 14){
@@ -159,6 +238,14 @@ public class FireDangerCalc {
 	
 	
 	
+	/**
+	 * Compute timber spread index.
+	 * <p>
+	 * A and B coefficients are adjusted based on wind speed. 
+	 * The wind and adjusted fine fuel moisture are used as parameters.
+	 * 
+	 * @return the Timber Spread Index
+	 */
 	public double computeTimberSpreadIndex(){
 		double A, B; // Special wind regression coefficients 
 		if(wind < 14){
@@ -177,6 +264,13 @@ public class FireDangerCalc {
 	
 	
 
+	/**
+	 * Compute fire load index.
+	 * <p>
+	 * Fire load index uses the Timber spread and Build Up Index as parameters
+	 *
+	 * @return the Fire Load Index
+	 */
 	public double computeFireLoadIndex(){
 		FLOAD = Math.pow(10, 1.75 * Math.log10(timber) + 0.32 * Math.log10(BUI) - 1.64);
 		
@@ -188,6 +282,9 @@ public class FireDangerCalc {
 	
 	
 	
+	/**
+	 * Prints all results.
+	 */
 	public void printAllResults(){
 		System.out.println("\n-------Results--------");
 		System.out.println("BUI: "+ BUI);
@@ -200,6 +297,12 @@ public class FireDangerCalc {
 
 	
 	
+	/**
+	 * The main method that contains the flow of logic. It calls each method as 
+	 * necessary. 
+	 *
+	 * @param args Unused.
+	 */
 	public static void main(String[] args) {
 		boolean doSkip = true; // Skip for FFM & ADFM 30% check
 		

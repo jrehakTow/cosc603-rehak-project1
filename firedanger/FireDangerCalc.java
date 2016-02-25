@@ -5,11 +5,12 @@ import java.util.Scanner;
 
 /**
  * <h1>Fire Danger Calculator</h1>
- * FireDangerCalc is a Re-engineering of Fire Danger Rating Calculator.
- * The program is contained in one class: FireDangerCalc
+ * FireDangerCalc is a Re-engineering of Fire Danger Rating Calculator. 
+ * This program is used to calculate National Fire Danger Rating indexes based on
+ * Fuel moisture, buildup index, and drying factor. 
  * <p>
- * Original source code can be found: 
- * @see <a href="http://www.nrs.fs.fed.us/pubs/rn/rn_nc079.pdf"</a>
+ * Original source code can be found at
+ * <a href="http://www.nrs.fs.fed.us/pubs/rn/rn_nc079.pdf"> Computer Calculation of Fire Danger </a>
  * @author James Rehak
  */
 public class FireDangerCalc {
@@ -20,10 +21,10 @@ public class FireDangerCalc {
 	/** The rain. */
 	boolean rain;
 	
-	/** The herbstage. */
+	/** The herb stage. */
 	char herbstage; //get input
 	
-	/** The herbstage percentage. */
+	/** The herb stage percentage. */
 	double herb; // Herb stage, has 3 states. 0%, 5%, 10%
 
 	/** The precipitation. */
@@ -90,9 +91,11 @@ public class FireDangerCalc {
 	
 
 	/**
-	 * Compute the dry wet range.
+	 * Compute the dry wet temperature range. 
+	 * <p>
+	 * Used to calculate fine fuel moisture.
 	 *
-	 * @return the dry wet range.
+	 * @return the dry wet temperature range.
 	 */
 	public double computeDryWetRange(){
 		drywetRange = dryTemp - wetTemp;
@@ -102,9 +105,9 @@ public class FireDangerCalc {
 	
 	
 	/**
-	 * Compute drying factor.
+	 * Compute the drying factor.
 	 * <p>
-	 * The drying factor is added to the BUI.
+	 * The drying factor is added to the Build Up Index.
 	 */
 	public void computeDryingFactor(){
 		double[] dryingFactors = {16.0, 10.0, 7.0, 5.0, 4.0, 3.0};
@@ -144,7 +147,9 @@ public class FireDangerCalc {
 	
 	
 	/**
-	 * Compute a b regression coefficients.
+	 * Compute a b regression coefficients. 
+	 * <p>
+	 * Used to find the fine fuel moisture index.
 	 */
 	public void computeAB(){
 		// All temperatures are measured in fahrenheit
@@ -169,7 +174,9 @@ public class FireDangerCalc {
 	
 
 	/**
-	 * Compute fine fuel moisture.
+	 * Compute the fine fuel moisture index.
+	 * <p>
+	 * Used to fined the fine fuel spread index. 
 	 *
 	 * @return the fine fuel moisture.
 	 */
@@ -181,10 +188,11 @@ public class FireDangerCalc {
 	
 	
 	/**
-	 * Compute adjusted fuel moisture.
-	 * <p>
-	 * Adjusted fine fuel moisture is also equal to equivalent fuel 
+	 * Compute adjusted fuel moisture index. The adjusted 
+	 * fine fuel moisture is also equal to equivalent fuel 
 	 * moisture
+	 * <p>
+	 * Used to find the timber spread index.
 	 *
 	 * @return the Adjusted Fine Fuel Moisture
 	 */
@@ -196,11 +204,9 @@ public class FireDangerCalc {
 	
 
 	/**
-	 * Compute buildup index.
-	 * <p> 
-	 * Compute buildup index is used when ever there is precipitation. 
+	 * Compute buildup index. This method is called whenever there is rain. 
 	 *
-	 * @return the Build Up Index
+	 * @return the Buildup Index
 	 */
 	public double computeBuildupIndex(){
 		BUI = -50.0 * (Math.log(1-(Math.E * (-BUO/50) )*Math.exp(-1.175 * (PRECIP - 0.1) ) ) );
@@ -214,10 +220,9 @@ public class FireDangerCalc {
 	
 	
 	/**
-	 * Compute fine fuel spread.
-	 * <p>
-	 * A and B coefficients are adjusted based on wind speed.
-	 * The wind and fine fuel moisture are used as parameters.
+	 * Compute the fine fuel spread index. The A and B coefficients
+	 * are adjusted based on wind speed. The wind and fine fuel moisture
+	 * are used as parameters.
 	 *
 	 * @return the Fine Fuel Spread referred to as grass
 	 */
@@ -239,10 +244,11 @@ public class FireDangerCalc {
 	
 	
 	/**
-	 * Compute timber spread index.
-	 * <p>
-	 * A and B coefficients are adjusted based on wind speed. 
+	 * Compute the timber spread index.
+	 * The A and B coefficients are adjusted based on wind speed. 
 	 * The wind and adjusted fine fuel moisture are used as parameters.
+	 * <p>
+	 * Used to calculate fire load index
 	 * 
 	 * @return the Timber Spread Index
 	 */
@@ -265,9 +271,11 @@ public class FireDangerCalc {
 	
 
 	/**
-	 * Compute fire load index.
+	 * Compute the fire load index.
+	 * The fire load index uses the Timber spread and Build Up Index as parameters.
 	 * <p>
-	 * Fire load index uses the Timber spread and Build Up Index as parameters
+	 * Fire load index was an experimental calculation back in 1968. It is now apart of 
+	 * the National Fire Danger Rating System. 
 	 *
 	 * @return the Fire Load Index
 	 */

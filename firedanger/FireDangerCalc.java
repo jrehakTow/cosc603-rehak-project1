@@ -340,6 +340,8 @@ public class FireDangerCalc {
 		System.out.print("Enter Yesterday's BUI: ");
 		dngr.BUO = in.nextDouble();
 		
+		in.close(); // Done with input
+		
 		//Generate initial data
 		dngr.computeDryWetRange();
 		dngr.computeAB(); //a & b are now initialized
